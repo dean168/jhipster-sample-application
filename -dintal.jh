@@ -1,0 +1,166 @@
+// 定义订单
+entity DEOrder {
+    orderNumber String required, // 订单编号
+    orderDate Instant required,  // 订单日期
+    status DEOrderStatus required, // 订单状态
+    totalAmount BigDecimal required // 总金额
+}
+// 定义订单项模型
+entity DEOrderItem {
+    productName String required, // 产品名称
+    quantity Integer required,   // 数量
+    price BigDecimal required    // 单价
+}
+// 定义订单状态的枚举
+enum DEOrderStatus {
+    PENDING, // 待处理
+    PROCESSING, // 处理中
+    SHIPPED, // 已发货
+    DELIVERED, // 已送达
+    CANCELED // 已取消
+}
+// 订购公司
+entity DECompany {
+	id String
+    name String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 最终用户
+entity DEUser {
+	id String
+    company String
+    name String
+    avatar String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 导师用户
+entity DETutor {
+	id String
+    name String
+    avatar String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 行业分类
+entity DEIndustry {
+	id String
+    parent String
+    name String
+    desc String
+    subs String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 职业分类
+entity DEOccupation {
+	id String
+    name String
+    desc String
+    // 所属行业
+    industry String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 数智人才
+entity DETalent {
+	id String
+    name String
+    avatar String
+    // node-red flows
+    flows String
+    // knowledge
+    knowledge String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// node-red 流程
+entity DENodFlow {
+	id String
+    name String
+    options String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 人才流程关系
+entity DETalentFlow {
+	id String
+    talent String
+    flows String
+}
+// 导师智库
+entity DETutorKnowledge {
+	id String
+    name String
+    options String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 用户智库
+entity DEUserKnowledge {
+	id String
+    name String
+    options String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 人才智库关系
+entity DETalentKnowledge {
+	id String
+    type String // tutor|user
+    talent String
+    knowledge String
+}
+// 导师智库
+entity DETutorKnowledge {
+	id String
+    name String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 历史消息
+entity DENodMessage {
+	id String
+	source String
+    target String
+    content String
+}
+// 数智员工
+entity DEEmployee {
+	id String
+    company String
+    department String
+    name String
+    avatar String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+
+relationship ManyToOne {
+	DEUser{company} to DECompany
+    DEEmployee{company} to DECompany
+    DEOrder {items} to DEOrderItem {order}
+}
