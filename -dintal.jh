@@ -1,0 +1,383 @@
+// 购买订单
+entity DEOrder {
+    id String required // 订单 id
+    sku String required // 华为 sku
+    company String required // 订单公司
+    status DEOrderStatus required // 订单状态
+    createdAt Date required // 订单日期
+}
+// 订单详情
+entity DEOrderProduct {
+    id String required // 详情 id
+    order String required // 订单 id
+    product String required // 产品(DETalent.id)
+    employee String required // 员工(DEEmployee.id)工作空间
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 定义订单状态的枚举
+enum DEOrderStatus {
+    PENDING, // 待处理
+    PROCESSING, // 处理中
+    SHIPPED, // 已发货
+    DELIVERED, // 已送达
+    CANCELED // 已取消
+}
+relationship ManyToOne {
+    DEOrder{company} to DECompany
+    DEOrderProduct{order} to DEOrder
+    DEOrderProduct{product} to DETalent
+    DEOrderProduct{employee} to DEEmployee
+}
+/**
+ * 1. 华为云下购买订单，新增 DEOrder 记录，status = PENDING
+ * 2. 售后人员根据 sku 在 DEOrderProduct 管理界面添加记录，status = PROCESSING
+ * 3. 售后人员添加完成后点击“发货”，后台服务根据订单进行相关初始化，status = SHIPPED
+ * 4. 后台服务完成相关初始化，status = DELIVERED
+**/
+
+
+// 导师用户
+entity DETutor {
+	id String
+    name String
+    avatar String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 导师团队
+entity DETeam {
+	id String
+    name String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 行业分类
+entity DEIndustry {
+	id String
+    parent String
+    name String
+    desc String
+    subs String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 职业分类
+entity DEOccupation {
+	id String
+    name String
+    desc String
+    industry String // 所属行业
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 岗位分类
+entity DEPosition {
+	id String
+    name String
+    industry String // 所属行业
+    occupation String // 所属职业
+    desc String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 导师智库
+entity DETutorKnowledge {
+	id String
+    name String
+    industry String // 所属行业
+    occupation String // 所属职业
+    position String // 所属岗位
+    options String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+relationship ManyToOne {
+    DETutorKnowledge{industry} to DEIndustry
+    DETutorKnowledge{occupation} to DEOccupation
+    DETutorKnowledge{position} to DEPosition
+}
+// 导师智库下的文档
+entity DETutorKWDocument {
+    id String
+    knowledge String // DETutorKnowledge.id
+    filename String
+    location String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+relationship ManyToOne {
+    DETutorKWDocument{knowledge} to DETutorKnowledge
+}
+// 导师智库下文档的片段
+entity DETutorKWDSegment {
+    id String
+    knowledge String
+    docs String // DETutorKWDocument.id
+    type String
+    content String
+    number Integer
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+relationship ManyToOne {
+    DETutorKWDSegment{knowledge} to DETutorKnowledge
+    DETutorKWDSegment{docs} to DETutorKWDocument
+}
+// 团队智库
+entity DETeamKnowledge {
+	id String
+    name String
+    industry String // 所属行业
+    occupation String // 所属职业
+    position String // 所属岗位
+    options String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+relationship ManyToOne {
+    DETeamKnowledge{industry} to DEIndustry
+    DETeamKnowledge{occupation} to DEOccupation
+    DETeamKnowledge{position} to DEPosition
+}
+// 团队智库下的文档
+entity DETeamKWDocument {
+    id String
+    knowledge String
+    filename String
+    location String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+relationship ManyToOne {
+    DETeamKWDocument{knowledge} to DETeamKnowledge
+}
+// 团队智库下文档的片段
+entity DETeamKWDSegment {
+    id String
+    knowledge String // DETeamKnowledge.id
+    docs String // DETeamKWDocument.id
+    type String
+    content String
+    number Integer
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+relationship ManyToOne {
+    DETeamKWDSegment{knowledge} to DETeamKnowledge
+    DETeamKWDSegment{docs} to DETeamKWDocument
+}
+
+
+// 导师下的行业
+entity DETutorIndustry {
+	id String
+    tutor String
+    industry String
+}
+relationship ManyToOne {
+    DETutorIndustry{tutor} to DETutor
+    DETutorIndustry{industry} to DEIndustry
+}
+// 导师下的职业
+entity DETutorOccupation {
+	id String
+    tutor String
+    occupation String
+}
+// 导师下的岗位
+entity DETutorPosition {
+	id String
+    tutor String
+    position String
+}
+// 团队下的导师
+entity DETeamTutor {
+	id String
+    team String
+    tutor String
+}
+// 团队下的行业
+entity DETeamIndustry {
+	id String
+    team String
+    industry String
+}
+// 团队下的职业
+entity DETeamOccupation {
+	id String
+    team String
+    occupation String
+}
+// 团队下的岗位
+entity DETeamPosition {
+	id String
+    team String
+    position String
+}
+
+
+// 数智人才
+entity DETalent {
+	id String
+    name String
+    avatar String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 人才下的流程
+entity DETalentFlow {
+	id String
+    talent String
+    options String // node-red
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 人才下的智库
+entity DETalentKnowledge {
+	id String
+    type String // tutor|team|user
+    talent String
+    knowledge String
+}
+
+
+// 订购公司
+entity DECompany {
+	id String
+    name String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 最终用户
+entity DEUser {
+	id String
+    company String
+    avatar String
+    name String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 用户下的智库
+entity DEUserKnowledge {
+	id String
+    name String
+    options String
+    industry String // 所属行业
+    occupation String // 所属职业
+    position String // 所属岗位
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 用户智库下的文档
+entity DEUserKWDocument {
+    id String
+    knowledge String
+    filename String
+    location String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 用户智库下文档的片段
+entity DEUserKWDSegment {
+    id String
+    knowledge String
+    docs String
+    type String
+    content String
+    number Integer
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+
+
+// 数智员工
+entity DEEmployee {
+	id String
+    talent String // 从哪个数智人才入职出来的
+    company String
+    department String
+    name String
+    avatar String
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 员工下的流程
+entity DEEmployeeFlow {
+	id String
+    employee String
+    options String // node-red
+	createdAt Date
+    createdBy String
+    updatedAt Date
+    updatedBy String
+}
+// 员工下的智库
+entity DEEmployeeKnowledge {
+	id String
+    type String // tutor|team|user
+    employee String
+    knowledge String
+}
+/**
+ * 入职怎么拷贝 DEEmployeeFlow DEEmployeeKnowledge DETutorKnowledge DETutorKWDocument DETutorKWDSegment
+**/
+
+// 会话主题
+entity DEEmployeeTopic {
+    id String
+    name String
+}
+// 历史消息
+entity DEEmployeeMessage {
+	id String
+    topic String
+	source String
+    target String
+    content String
+}
+
+relationship ManyToOne {
+	DEUser{company} to DECompany
+    DEEmployee{company} to DECompany
+}
